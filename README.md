@@ -2,8 +2,8 @@
 
 ## Versions
 
-fireabse-tools: v12.5.3
-firebase-js-sdk: v10.3.1
+fireabse-tools: v12.5.3<br>
+firebase-js-sdk: v10.3.1<br>
 node: v18.16.1
 
 ## Steps to reproduce
