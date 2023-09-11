@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Sign In Example</title>
+
+    <!-- Material Design Theming -->
+    <link
+      rel="stylesheet"
+      href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+      import {
+        signOut,
+        getAuth,
+        GoogleAuthProvider,
+        getRedirectResult,
+        signInWithRedirect,
+        connectAuthEmulator,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+      import { useEmulator, firebaseConfig } from "./configs.js";
+
+      // ----------------- CODE SNIPPET -----------------
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth();
+      console.log("useEmulator:", useEmulator);
+      if (useEmulator) {
+        connectAuthEmulator(auth, "http://127.0.0.1:9099");
+      }
+
+      const provider = new GoogleAuthProvider();
+      provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+      provider.setCustomParameters({
+        login_hint: "user@example.com",
+      });
+      // ----------------- CODE SNIPPET -----------------
+
+      /**
+       * Function called when clicking the Login/Logout button.
+       */
+      function toggleSignIn() {
+        if (!auth.currentUser) {
+          provider.addScope("https://www.googleapis.com/auth/plus.login");
+          signInWithRedirect(auth, provider);
+        } else {
+          signOut(auth);
+        }
+        document.getElementById("quickstart-sign-in").disabled = true;
+      }
+
+      async function initApp() {
+        // Result from Redirect auth flow
+
+        // ----------------- CODE SNIPPET -----------------
+        try {
+          console.log("before redirect");
+          let userCredential = await getRedirectResult(auth);
+          console.log("userCredential:", userCredential);
+          if (userCredential) {
+            const user = userCredential.user;
+            console.log("==USER==");
+            console.log(user);
+            const credential =
+              GoogleAuthProvider.credentialFromResult(userCredential);
+            console.log("==CREDENTIAL==");
+            console.log(credential);
+            const token = credential.accessToken;
+            console.log("==TOKEN==");
+            console.log(token);
+          } else {
+            console.log("NO RESULT");
+            // await signInWithRedirect(auth, provider); // Move this to a button event.
+          }
+        } catch (error) {
+          console.error(error);
+        }
+        // ----------------- CODE SNIPPET -----------------
+
+        // Listening for auth state changes.
+        onAuthStateChanged(auth, function (user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+            document.getElementById("quickstart-sign-in-status").textContent =
+              "Signed in";
+            document.getElementById("quickstart-sign-in").textContent =
+              "Sign out";
+            document.getElementById("quickstart-account-details").textContent =
+              JSON.stringify(user, null, "  ");
+          } else {
+            // User is signed out.
+            document.getElementById("quickstart-sign-in-status").textContent =
+              "Signed out";
+            document.getElementById("quickstart-sign-in").textContent =
+              "Sign in with Google";
+            document.getElementById("quickstart-account-details").textContent =
+              "null";
+            document.getElementById("quickstart-oauthtoken").textContent =
+              "null";
+          }
+          document.getElementById("quickstart-sign-in").disabled = false;
+        });
+
+        document
+          .getElementById("quickstart-sign-in")
+          .addEventListener("click", toggleSignIn, false);
+
+        document.getElementById("quickstart-sign-in").disabled = false;
+      }
+
+      initApp();
+    </script>
+  </head>
+  <body>
+    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <!-- Header section containing title -->
+      <header
+        class="mdl-layout__header mdl-color-text--white mdl-color--light-blue-700"
+      >
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div
+            class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--8-col-desktop"
+          >
+            <a href="/"><h3>Firebase Authentication</h3></a>
+          </div>
+        </div>
+      </header>
+
+      <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <!-- Container for the demo -->
+          <div
+            class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop"
+          >
+            <div
+              class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white"
+            >
+              <h2 class="mdl-card__title-text">
+                Google Authentication with Redirect
+              </h2>
+            </div>
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+              <p>Sign in with your Google account below.</p>
+
+              <!-- Button that handles sign-in/sign-out -->
+              <button
+                disabled
+                class="mdl-button mdl-js-button mdl-button--raised"
+                id="quickstart-sign-in"
+              >
+                Sign in with Google
+              </button>
+
+              <!-- Container where we'll display the user details -->
+              <div class="quickstart-user-details-container">
+                Firebase sign-in status:
+                <span id="quickstart-sign-in-status">Unknown</span>
+                <div>Firebase auth <code>currentUser</code> object value:</div>
+                <pre><code id="quickstart-account-details">null</code></pre>
+                <div>Google OAuth Access Token:</div>
+                <pre><code id="quickstart-oauthtoken">null</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
