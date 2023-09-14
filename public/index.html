@@ -62,10 +62,10 @@ limitations under the License.
       /**
        * Function called when clicking the Login/Logout button.
        */
-      function toggleSignIn() {
+      async function toggleSignIn() {
         if (!auth.currentUser) {
           provider.addScope("https://www.googleapis.com/auth/plus.login");
-          signInWithRedirect(auth, provider);
+          await signInWithRedirect(auth, provider);
         } else {
           signOut(auth);
         }
