@@ -41,3 +41,7 @@ This does not work ("http://localhost:5000"):
    - Console logs will also show `userCredentials` is `null`
    - Auth emulator console (http://127.0.0.1:4000/auth)
      - User is created
+
+## Notes:
+
+When connecting to an actual Firebase project(Set `useEmulator` to `false`), both "http://127.0.0.1:5000/" and "http://localhost:5000" works.
