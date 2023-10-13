@@ -24,6 +24,8 @@ This works ("http://127.0.0.1:5000/"):
 1. Get redirected to "http://127.0.0.1:5000/"
    - Page will display user information
    - Console logs will also show `userCredentials`
+   - Auth emulator console (http://127.0.0.1:4000/auth)
+     - User is created
 
 This does not work ("http://localhost:5000"):
 
@@ -37,3 +39,5 @@ This does not work ("http://localhost:5000"):
 1. Get redirected to "http://localhost:5000"
    - Page will not display any user information
    - Console logs will also show `userCredentials` is `null`
+   - Auth emulator console (http://127.0.0.1:4000/auth)
+     - User is created
