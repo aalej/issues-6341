@@ -40,7 +40,7 @@ This does not work ("http://localhost:5000"):
    - Page will not display any user information
    - Console logs will also show `userCredentials` is `null`
    - Auth emulator console (http://127.0.0.1:4000/auth)
-     - User is created
+     - User is not created
 
 ## Notes:
 
